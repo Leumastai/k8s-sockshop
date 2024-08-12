@@ -12,7 +12,7 @@ resource "kubernetes_ingress_v1" "prome-ingress" {
 
   spec {
     rule {
-      host = "soskshop.wuaze.com/"
+      host = "soskshop.wuaze.com"
       http {
         path {
           backend {
