@@ -12,7 +12,7 @@ resource "kubernetes_ingress_v1" "micro-ingress" {
 
   spec {
     rule {
-      host = "sockshop-k8s.ng.com"
+      host = "soskshop.wuaze.com"
       http {
         path {
           backend {
