@@ -1,4 +1,5 @@
 # Terraform Block
+# Defining Terraform and AWS version
 terraform {
   required_version = ">= 1.0"
   required_providers {
@@ -12,9 +13,4 @@ terraform {
 # Provider Block
 provider "aws" {
   region  = var.aws_region
-  #profile = "$HOME/.aws/credentials"
 }
-/*
-Note-1:  AWS Credentials Profile (profile = "default") configured on your local desktop terminal  
-$HOME/.aws/credentials
-*/

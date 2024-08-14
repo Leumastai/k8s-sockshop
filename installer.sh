@@ -1,31 +1,17 @@
-# update the ubuntu server
-sudo apt-get update -y
-sudo apt-get upgrade -y
+# Update the RHEL server
+sudo yum update -y
+sudo yum upgrade -y
 
+# Install unzip
+sudo yum install unzip -y
 
-# install unzip
+# Install terraform
 
-sudo apt-get install unzip
+sudo yum install -y yum-utils
+sudo yum-config-manager --add-repo https://rpm.releases.hashicorp.com/RHEL/hashicorp.repo
+sudo yum -y install terraform
 
-# install terraform
-
-sudo apt-get update && sudo apt-get install -y gnupg software-properties-common
-
-wget -O- https://apt.releases.hashicorp.com/gpg | \
-gpg --dearmor | \
-sudo tee /usr/share/keyrings/hashicorp-archive-keyring.gpg
-
-gpg --no-default-keyring \
---keyring /usr/share/keyrings/hashicorp-archive-keyring.gpg \
---fingerprint
-
-echo "deb [signed-by=/usr/share/keyrings/hashicorp-archive-keyring.gpg] \
-https://apt.releases.hashicorp.com $(lsb_release -cs) main" | \
-sudo tee /etc/apt/sources.list.d/hashicorp.list
-
-sudo apt-get update && sudo apt-get install terraform
-
-# install kubectl
+# Install kubectl
 
 curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
 
@@ -35,12 +21,11 @@ echo "$(cat kubectl.sha256)  kubectl" | sha256sum --check
 
 sudo install -o root -g root -m 0755 kubectl /usr/local/bin/kubectl
 
-chmod +x kubectl 
+chmod +x kubectl
 mkdir -p ~/.local/bin
 mv ./kubectl ~/.local/bin/kubectl
 
-
-# install aws cli
+# Install AWS CLI
 
 curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
 
@@ -48,46 +33,32 @@ unzip awscliv2.zip
 
 sudo ./aws/install --update
 
-# install helm
+# Install helm
 
 curl https://baltocdn.com/helm/signing.asc | gpg --dearmor | sudo tee /usr/share/keyrings/helm.gpg > /dev/null
 
-sudo apt-get install apt-transport-https --yes
+sudo yum install -y yum-utils
+sudo yum-config-manager --add-repo https://baltocdn.com/helm/stable/rpm/stable.repo
+sudo yum install helm -y
 
-echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/helm.gpg] https://baltocdn.com/helm/stable/debian/ all main" | sudo tee /etc/apt/sources.list.d/helm-stable-debian.list
+# Install Jenkins
 
-sudo apt-get update
-
-sudo apt-get install helm
-
-
-# install jenkins
-
-sudo apt install fontconfig openjdk-17-jre -y
+sudo yum install fontconfig java-17-openjdk -y
 
 java -version
 
-sudo wget -O /usr/share/keyrings/jenkins-keyring.asc \
-  https://pkg.jenkins.io/debian-stable/jenkins.io-2023.key
+sudo wget -O /etc/yum.repos.d/jenkins.repo https://pkg.jenkins.io/redhat-stable/jenkins.repo
+sudo rpm --import https://pkg.jenkins.io/redhat-stable/jenkins.io.key
 
-echo deb [signed-by=/usr/share/keyrings/jenkins-keyring.asc] \
-  https://pkg.jenkins.io/debian-stable binary/ | sudo tee \
-  /etc/apt/sources.list.d/jenkins.list > /dev/null
-
-sudo apt-get update -y
-
-sudo apt-get install jenkins -y
+sudo yum install jenkins -y
 
 sudo systemctl enable jenkins
-
 sudo systemctl start jenkins
-
 sudo systemctl status jenkins
 
-sudo ufw allow OpenSSH 
+# Configure firewall
 
-sudo ufw enable
-
-sudo ufw allow 8080
-
-sudo ufw status
+sudo firewall-cmd --permanent --add-service=ssh
+sudo firewall-cmd --permanent --add-port=8080/tcp
+sudo firewall-cmd --reload
+sudo firewall-cmd --list-all
